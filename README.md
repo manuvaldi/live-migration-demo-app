@@ -30,7 +30,7 @@ Built with **Node.js + React + WebSockets**, styled with **Red Hat corporate des
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/live-migration-dashboard.git
+git clone https://github.com/yourusername/live-migration-demo-app.git
 cd live-migration-dashboard
 ```
 
