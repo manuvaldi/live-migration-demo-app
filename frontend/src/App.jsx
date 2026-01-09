@@ -39,7 +39,7 @@ export default function App() {
             <Metric label="Time" value={d.time} />
           </Card>
 
-          <Card title="FILE STATE">
+          <Card title="OPENSHIFT CLUSTER">
             <div style={styles.fileBox}>{d.value || "—"}</div>
           </Card>
 
