@@ -56,7 +56,7 @@ setInterval(() => {
     value,
     cpu,
     mem,
-    host: os.hostname(),
+    host: process.env.HOSTNAME || os.hostname(),
     time: new Date().toLocaleTimeString()
   });
 
