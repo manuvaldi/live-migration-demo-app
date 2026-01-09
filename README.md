@@ -13,7 +13,7 @@ Built with **Node.js + React + WebSockets**, styled with **Red Hat corporate des
 * Horizontal cards, Red Hat colors, and official logo
 * Official Red Hat **favicon**
 * Instant updates on the frontend with **WebSockets**
-* Docker-ready for quick deployment
+* Podman/Docker-ready for quick deployment
 
 ---
 
@@ -21,7 +21,7 @@ Built with **Node.js + React + WebSockets**, styled with **Red Hat corporate des
 
 * Node.js >= 22
 * npm or yarn
-* Docker (optional, recommended for demo)
+* Podman/Docker (optional, recommended for demo)
 
 ---
 
@@ -69,18 +69,18 @@ The change will instantly appear in the frontend dashboard.
 
 ---
 
-## 🐳 Using Docker
+## 🐳 Using podman
 
-### Build the Docker image:
+### Build the Podman/Docker image:
 
 ```bash
-docker build -t live-migration-app .
+podman build -t live-migration-app .
 ```
 
 ### Run the container:
 
 ```bash
-docker run -it --rm -p 3000:3000 \
+podman run -it --rm -p 3000:3000 \
   -v $(pwd)/watched.txt:/app/watched.txt \
   live-migration-app
 ```
@@ -126,7 +126,7 @@ live-migration-dashboard/
 * [React](https://reactjs.org/)
 * [Vite](https://vitejs.dev/)
 * [Socket.io](https://socket.io/)
-* Docker
+* Podman/Docker
 * Inline CSS styled with Red Hat design
 
 ---
