@@ -38,6 +38,28 @@ io.on("connection", (socket) => {
   });
 });
 
+function cpuSnapshot() {
+  const cpus = os.cpus();
+  let idle = 0, total = 0;
+
+  cpus.forEach(c => {
+    for (type in c.times) total += c.times[type];
+    idle += c.times.idle;
+  });
+
+  return { idle, total };
+}
+
+let lastCpu = cpuSnapshot();
+
+function cpuPercent() {
+  const now = cpuSnapshot();
+  const idle = now.idle - lastCpu.idle;
+  const total = now.total - lastCpu.total;
+  lastCpu = now;
+  return Math.max(0, 100 - Math.round(100 * idle / total));
+}
+
 // ----------------- Función para enviar updates -----------------
 function sendUpdate(socket) {
   let value = lastValue;
@@ -47,12 +69,14 @@ function sendUpdate(socket) {
     // archivo puede no existir todavía
   }
   lastValue = value;
+  const mem = Math.round((1 - os.freemem() / os.totalmem()) * 100);
+  const cpu = cpuPercent();
 
   const data = {
     host: HOSTNAME,
     value,
-    cpu: Math.floor(Math.random() * 100), // Simulación simple de CPU
-    mem: Math.floor(Math.random() * 100), // Simulación simple de Mem
+    cpu: cpu,
+    mem: mem,
     time: new Date().toLocaleTimeString()
   };
 
