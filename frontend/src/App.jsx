@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const socket = io({
-  timeout: 2000,          // 2 segundos para la conexión inicial
-  reconnectionAttempts: 3, // opcional: reintenta 3 veces
-  reconnectionDelay: 1000
+  timeout: 1000,           // 1 segundo máximo para la conexión inicial
+  reconnection: true,      // reconectar si se pierde
+  reconnectionAttempts: 3, // máximo 3 intentos
+  reconnectionDelay: 500,  // esperar 0.5s entre intentos
+  reconnectionDelayMax: 1000, // máximo delay entre intentos
+  pingInterval: 1000,      // enviar ping cada 2 segundos
+  pingTimeout: 1000        // considerar desconectado si no responde en 1 segundo
 });
 
 export default function App() {
@@ -17,6 +21,8 @@ export default function App() {
   });
 
   useEffect(() => {
+    socket.on("connect", () => console.log("Socket connected"));
+    socket.on("disconnect", () => console.log("Socket disconnected"));
     socket.on("update", setD);
     return () => socket.off("update");
   }, []);
