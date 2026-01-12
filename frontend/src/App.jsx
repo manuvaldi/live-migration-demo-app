@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io();
+const socket = io({
+  timeout: 2000,          // 2 segundos para la conexión inicial
+  reconnectionAttempts: 3, // opcional: reintenta 3 veces
+  reconnectionDelay: 1000
+});
 
 export default function App() {
   const [d, setD] = useState({

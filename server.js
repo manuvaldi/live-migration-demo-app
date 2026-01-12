@@ -7,6 +7,8 @@ const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
+server.setTimeout(2000); // timeout HTTP en ms
+
 const io = new Server(server);
 
 const FILE = "./watched.txt";
