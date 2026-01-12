@@ -1,86 +1,72 @@
+const fs = require("fs");
+const os = require("os");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
-server.setTimeout(2000); // timeout HTTP en ms
-
 const io = new Server(server);
 
-const FILE = "./watched.txt";
+const PORT = process.env.PORT || 3000;
+const WATCHED_FILE = "./watched.txt";
+const HOSTNAME = process.env.HOSTNAME_CUSTOM || os.hostname();
+
 let lastValue = "";
 
-/* -------- CPU -------- */
+// Servir frontend
+app.use(express.static("frontend/dist"));
 
-function cpuSnapshot() {
-  const cpus = os.cpus();
-  let idle = 0, total = 0;
-
-  cpus.forEach(c => {
-    for (type in c.times) total += c.times[type];
-    idle += c.times.idle;
-  });
-
-  return { idle, total };
-}
-
-let lastCpu = cpuSnapshot();
-
-function cpuPercent() {
-  const now = cpuSnapshot();
-  const idle = now.idle - lastCpu.idle;
-  const total = now.total - lastCpu.total;
-  lastCpu = now;
-  return Math.max(0, 100 - Math.round(100 * idle / total));
-}
-
-// Ruta Health
-app.get('/health', (req, res) => {
+// ----------------- Health check -----------------
+app.get("/health", (req, res) => {
   res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    hostname: process.env.HOSTNAME_CUSTOM || require('os').hostname()
+    status: "ok",
+    hostname: HOSTNAME,
+    timestamp: new Date().toISOString()
   });
 });
 
-/* -------- Frontend -------- */
-
-app.use(express.static(path.join(__dirname, "frontend/dist")));
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
-});
-
-/* -------- Realtime loop -------- */
-
-setInterval(() => {
-  let value = "FILE_NOT_FOUND";
-  try { value = fs.readFileSync(FILE, "utf8").trim(); } catch {}
-
-  const mem = Math.round((1 - os.freemem() / os.totalmem()) * 100);
-  const cpu = cpuPercent();
-
-  io.emit("update", {
-    value,
-    cpu,
-    mem,
-    host: process.env.HOSTNAME || os.hostname(),
-    time: new Date().toLocaleTimeString()
-  });
-
-}, 1000);
-
+// ----------------- Socket.io -----------------
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
+
+  // Enviar datos iniciales
+  sendUpdate(socket);
 
   socket.on("disconnect", (reason) => {
     console.log("Client disconnected:", reason);
   });
 });
 
-server.listen(3000, () => {
-  console.log("App en http://0.0.0.0:3000");
+// ----------------- Función para enviar updates -----------------
+function sendUpdate(socket) {
+  let value = lastValue;
+  try {
+    value = fs.readFileSync(WATCHED_FILE, "utf8").trim();
+  } catch (err) {
+    // archivo puede no existir todavía
+  }
+  lastValue = value;
+
+  const data = {
+    host: HOSTNAME,
+    value,
+    cpu: Math.floor(Math.random() * 100), // Simulación simple de CPU
+    mem: Math.floor(Math.random() * 100), // Simulación simple de Mem
+    time: new Date().toLocaleTimeString()
+  };
+
+  if (socket) {
+    socket.emit("update", data);
+  } else {
+    io.emit("update", data);
+  }
+}
+
+// ----------------- Actualizar cada 1s -----------------
+setInterval(() => sendUpdate(), 1000);
+
+// ----------------- Iniciar servidor -----------------
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
