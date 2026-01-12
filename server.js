@@ -36,6 +36,15 @@ function cpuPercent() {
   return Math.max(0, 100 - Math.round(100 * idle / total));
 }
 
+// Ruta Health
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    hostname: process.env.HOSTNAME_CUSTOM || require('os').hostname()
+  });
+});
+
 /* -------- Frontend -------- */
 
 app.use(express.static(path.join(__dirname, "frontend/dist")));
