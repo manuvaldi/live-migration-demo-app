@@ -11,6 +11,22 @@ const socket = io({
   pingTimeout: 1000        // considerar desconectado si no responde en 1 segundo
 });
 
+/* ----------------- Timeout para fetch HTTP ----------------- */
+async function fetchWithTimeout(url, timeout = 2000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    return await res.json();
+  } catch (err) {
+    clearTimeout(id);
+    console.error("Fetch timeout or error:", err);
+    return null;
+  }
+}
+
 export default function App() {
   const [d, setD] = useState({
     value: "",

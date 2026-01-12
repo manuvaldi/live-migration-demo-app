@@ -73,8 +73,12 @@ setInterval(() => {
 
 }, 1000);
 
-io.on("connection", () => {
-  console.log("Cliente conectado");
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  socket.on("disconnect", (reason) => {
+    console.log("Client disconnected:", reason);
+  });
 });
 
 server.listen(3000, () => {
