@@ -4,10 +4,10 @@ import { io } from "socket.io-client";
 const socket = io({
   timeout: 1000,           // 1 segundo máximo para la conexión inicial
   reconnection: true,      // reconectar si se pierde
-  reconnectionAttempts: 3, // máximo 3 intentos
-  reconnectionDelay: 500,  // esperar 0.5s entre intentos
-  reconnectionDelayMax: 1000, // máximo delay entre intentos
-  pingInterval: 1000,      // enviar ping cada 2 segundos
+  reconnectionAttempts: 5, // máximo 3 intentos
+  reconnectionDelay: 200,  // esperar 0.5s entre intentos
+  reconnectionDelayMax: 500, // máximo delay entre intentos
+  pingInterval: 200,      // enviar ping cada 2 segundos
   pingTimeout: 1000        // considerar desconectado si no responde en 1 segundo
 });
 
