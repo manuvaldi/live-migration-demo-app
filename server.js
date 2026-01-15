@@ -27,7 +27,7 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     hostname: HOSTNAME,
-    cloud: value,
+    cluster: value,
     timestamp: new Date().toISOString()
   });
 });
