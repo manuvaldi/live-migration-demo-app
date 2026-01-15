@@ -19,9 +19,15 @@ app.use(express.static("frontend/dist"));
 
 // ----------------- Health check -----------------
 app.get("/health", (req, res) => {
+  try {
+    value = fs.readFileSync(WATCHED_FILE, "utf8").trim();
+  } catch (err) {
+    // archivo puede no existir todavía
+  }
   res.status(200).json({
     status: "ok",
     hostname: HOSTNAME,
+    cloud: value,
     timestamp: new Date().toISOString()
   });
 });
